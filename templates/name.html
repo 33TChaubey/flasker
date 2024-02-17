@@ -13,6 +13,8 @@
 
 {% if name %}
     <h1>Hello {{ name }}</h1>
+    <img src="{{ url_for('static',filename='images/yooo.jpg') }}" alt="" style="height: 40px; width: 80px;">
+    <p id="demo">This is stuff...</p>
 {% else %}
     <h1>What's your name ?</h1><br>
     <form action="" method="POST">
@@ -36,9 +38,10 @@
         alert.style.opacity = 0;
         setTimeout(function() {
             alert.remove();
-        }, 1000); // Adjust timing to match the CSS transition duration
-    }, 2000); // 2 seconds delay before removing the alert
+        }, 1000); 
+    }, 2000);
 </script>
+<script src="{{ url_for('static',filename='js/myfile.js') }}"></script>
 
 
 
