@@ -6,6 +6,7 @@ from flask import flash, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_migrate import Migrate
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 
@@ -39,7 +40,20 @@ class Users(db.Model):
     email = db.Column(db.String(120), nullable=False, unique=True)
     favorite_color = db.Column(db.String(200), nullable=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
-
+    password_hash = db.Column(db.String(128))
+    
+    @property
+    def password(self):
+        raise AttributeError("password is not readable attribute")
+    
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+        
+    def verify_passwords(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    
     def __repr__(self):
         return '<Name %r>' % self.name
 
@@ -49,7 +63,9 @@ class UserForm(FlaskForm):
     email = StringField("email", validators=[DataRequired()])
     favorite_color = StringField("favorite_color")
     submit = SubmitField("Submit")
-    
+
+
+# Update Database Record
 @app.route('/update/<int:id>',methods=['GET','POST'])
 def update(id):
     form = UserForm()
@@ -68,7 +84,31 @@ def update(id):
         return render_template('update.html', form=form, name_to_update=name_to_update)
 
             
-                    
+# delete Database Record
+@app.route('/delete/<int:id>', methods=['GET','POST'])
+def delete(id):
+    form = UserForm()
+    name = None
+    user_to_delete = Users.query.get_or_404(id)
+    try:
+        db.session.delete(user_to_delete)
+        db.session.commit()
+        flash("User Deleted Successfullt")
+        our_users = Users.query.order_by(Users.date_added)
+        return render_template('add_user.html', form=form, name=name, our_users=our_users)
+
+    except:
+        flash("There is a Problem")
+        return render_template('add_user.html', form=form, name=name, our_users=our_users)
+        
+
+
+
+
+
+
+
+
         
 class NameForm(FlaskForm):
     name = StringField("What's your name", validators=[DataRequired()])
