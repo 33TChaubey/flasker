@@ -2,6 +2,8 @@ from flask import Flask, render_template
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from flask import flash
+
 # Create a FLask instance
 
 app = Flask(__name__)
@@ -45,4 +47,5 @@ def name():
     if form.validate_on_submit():
         name = form.name.data
         form.name.data = ''
+        flash("Form Submitted Successfully")
     return render_template('name.html', name=name, form=form)

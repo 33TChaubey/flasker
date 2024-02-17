@@ -4,6 +4,13 @@
 
 {% block content %}
 
+{% for message in get_flashed_messages() %}
+<div id="flash-alert" class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
 {% if name %}
     <h1>Hello {{ name }}</h1>
 {% else %}
@@ -22,6 +29,16 @@
         )}}
     </form>
 {% endif %}
+<script>
+    setTimeout(function() {
+        var alert = document.getElementById('flash-alert');
+        alert.style.transition = "opacity 1s ease";
+        alert.style.opacity = 0;
+        setTimeout(function() {
+            alert.remove();
+        }, 1000); // Adjust timing to match the CSS transition duration
+    }, 2000); // 2 seconds delay before removing the alert
+</script>
 
 
 
