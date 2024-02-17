@@ -12,8 +12,13 @@ from datetime import datetime
 # Create a FLask instance
 app = Flask(__name__)
 
+#old database
 #add database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:123456@localhost/our_users'
+
+
 
 
 #Secret Key
@@ -21,7 +26,7 @@ app.config['SECRET_KEY'] = "my super secret key"
 
 db = SQLAlchemy(app)
 if __name__ == '__main__':
-    db.create_all()  # This will create the database tables when you run the application
+    db.create_all()  
     app.run(debug=True)
     
     
@@ -34,7 +39,8 @@ class Users(db.Model):
 
     def __repr__(self):
         return '<Name %r>' % self.name
-    
+
+
 class UserForm(FlaskForm):
     name = StringField("name", validators=[DataRequired()])
     email = StringField("email", validators=[DataRequired()])
@@ -52,7 +58,7 @@ def add_user():
     if form.validate_on_submit():
         user = Users.query.filter_by(email=form.email.data).first()
         if user is None:
-            user = Users(name=form.name.data, email=form.name.data)
+            user = Users(name=form.name.data, email=form.email.data)
             db.session.add(user)
             db.session.commit()
         name = form.name.data
@@ -60,7 +66,7 @@ def add_user():
         form.email.data = ''
         flash("User added Successfully")
     our_users = Users.query.order_by(Users.date_added)
-    return render_template('add_user.html', form=form, our_users=our_users)
+    return render_template('add_user.html', form=form, name=name, our_users=our_users)
     
 
 
