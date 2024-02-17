@@ -15,21 +15,53 @@ app = Flask(__name__)
 #add database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 
+
 #Secret Key
 app.config['SECRET_KEY'] = "my super secret key"
 
 db = SQLAlchemy(app)
-
+if __name__ == '__main__':
+    db.create_all()  # This will create the database tables when you run the application
+    app.run(debug=True)
+    
+    
 #Create Model 
 class Users(db.Model):
-    id = db.column(db.Integer, primary_key=True)
-    name = db.column(db.String(200), nullable=False)
-    email = db.column(db.String(120), nullable=False,unique=True)
-    data_added = db.column(db.DateTime, defult=datetime.utcnow)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return '<Name %r>' % self.name
+    
+class UserForm(FlaskForm):
+    name = StringField("name", validators=[DataRequired()])
+    email = StringField("email", validators=[DataRequired()])
+    submit = SubmitField("Submit")
 
 class NameForm(FlaskForm):
     name = StringField("What's your name", validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
+@app.route('/user/add', methods=['GET','POST'])
+def add_user():
+    name = None
+    form = UserForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user is None:
+            user = Users(name=form.name.data, email=form.name.data)
+            db.session.add(user)
+            db.session.commit()
+        name = form.name.data
+        form.name.data = ''
+        form.email.data = ''
+        flash("User added Successfully")
+    our_users = Users.query.order_by(Users.date_added)
+    return render_template('add_user.html', form=form, our_users=our_users)
+    
 
 
 @app.route('/')
