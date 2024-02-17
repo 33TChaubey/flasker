@@ -1,6 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
+{% for message in get_flashed_messages() %}
+<div id="flash-alert" class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+
 <h1>Hello Word</h1>
 <p>This is my first page</p>
 <p>my name is {{ first_name }}</p>
+
+<script>
+    setTimeout(function() {
+        var alert = document.getElementById('flash-alert');
+        alert.style.transition = "opacity 1s ease";
+        alert.style.opacity = 0;
+        setTimeout(function() {
+            alert.remove();
+        }, 1000); // Adjust timing to match the CSS transition duration
+    }, 2000); // 2 seconds delay before removing the alert
+</script>
 {% endblock  %}
