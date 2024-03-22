@@ -13,11 +13,10 @@ Welcome to our awesome Flask blog app! This app allows you to create, read, upda
 
 ## Installation
 
-1. Clone the repository:
+1. **Clone the repository:**
 
 ```bash
-    git clone https://github.com/yourusername/awesome-flask-blog.git
-
+git clone https://github.com/tchaubey/awesome-flask-blog.git
 
 **Still Working on It... 🚧**
 -----------------------------
